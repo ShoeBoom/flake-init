@@ -1,7 +1,7 @@
 import { select } from "@clack/prompts";
 import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
-import { ensureAnswer } from "./resolve-config";
+import { ensureAnswer } from "../utils";
 
 const selectPackages = async (langKey: keyof typeof langConfigs) => {
   const lang = langConfigs[langKey];

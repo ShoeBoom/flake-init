@@ -1,7 +1,7 @@
-import { cancel, isCancel, multiselect, select } from "@clack/prompts";
+import { multiselect, select } from "@clack/prompts";
 import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
-import { typeSafeEntries, typeSafeKeys } from "../utils";
+import { ensureAnswer, typeSafeEntries, typeSafeKeys } from "../utils";
 
 const systemOptions = [
   {
@@ -107,14 +107,6 @@ const templates = {
 
 export type TemplateName = keyof typeof templates;
 
-const ensureAnswer = <T>(answer: T | symbol): T => {
-  if (isCancel(answer)) {
-    cancel("Operation cancelled.");
-    process.exit(0);
-  }
-  return answer;
-};
-
 const resolveTemplate = async () => {
   return ensureAnswer(
     await select({
@@ -157,7 +149,7 @@ const resolveLang = async () => {
   );
 };
 
-const resolveConfig = async () => {
+export const resolveConfig = async () => {
   const template = await resolveTemplate();
   const supportedSystems = await resolveSupportedSystems();
   const lang = await resolveLang();
@@ -175,5 +167,3 @@ export const renderTemplate = (
 ) => {
   return templates[template].template(props);
 };
-
-export { ensureAnswer, resolveConfig };

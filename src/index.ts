@@ -3,12 +3,9 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { cancel, confirm, intro, outro, spinner } from "@clack/prompts";
 import chalk from "chalk";
-import {
-  ensureAnswer,
-  renderTemplate,
-  resolveConfig,
-} from "./prompts/resolve-config";
+import { renderTemplate, resolveConfig } from "./prompts/resolve-config";
 import { selectPackages } from "./prompts/select-packages";
+import { ensureAnswer } from "./utils";
 
 const writeFlake = async (flakeContents: string) => {
   const outputPath = path.join(process.cwd(), "flake.nix");
