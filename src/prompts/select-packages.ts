@@ -3,7 +3,7 @@ import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
 import { ensureAnswer, typeSafeEntries } from "../utils";
 
-const selectPackages = async (langKey: keyof typeof langConfigs) => {
+export const selectPackages = async (langKey: keyof typeof langConfigs) => {
   const lang = langConfigs[langKey];
   if (!lang) {
     return [];
@@ -30,5 +30,3 @@ const selectPackages = async (langKey: keyof typeof langConfigs) => {
 
   return flattenedPackages;
 };
-
-export { selectPackages };
