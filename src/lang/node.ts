@@ -69,7 +69,6 @@ const packageManagerStep: LangStepChoice = {
 };
 
 export default {
-  name: "node",
   packages: {
     steps: [nodeVersionStep, packageManagerStep],
   },

@@ -15,7 +15,6 @@ export interface LangStepChoice {
 }
 
 export interface LangConfig {
-  name: string;
   packages: {
     steps: LangStepChoice[];
   };
