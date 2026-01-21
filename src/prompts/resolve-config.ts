@@ -28,13 +28,13 @@ const templates = {
   outputs = inputs@{nixpkgs, flake-parts, ...}:
     flake-parts.lib.mkFlake { inherit inputs; } (top@{ config, withSystem, moduleWithSystem, ... }: {
     systems = [
-      ${supportedSystems.map((s) => `"${s}"`).join("\n")}
+      ${supportedSystems.map((s) => `"${s}"`).join("\n      ")}
     ];
 
     perSystem = {pkgs, system, ...}: {
       packages.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            ${packages.map((p) => p.package).join("\n")}
+            ${packages.map((p) => p.package).join("\n            ")}
           ];
         };
     };
@@ -58,7 +58,7 @@ const templates = {
 
     let
       supportedSystems = [
-        ${supportedSystems.map((s) => `"${s}"`).join("\n")}
+        ${supportedSystems.map((s) => `"${s}"`).join("\n        ")}
       ];
       forEachSupportedSystem =
         f:
@@ -75,7 +75,7 @@ const templates = {
         {
           default = pkgs.mkShellNoCC {
             packages = with pkgs; [
-              ${packages.map((p) => p.package).join("\n")}
+              ${packages.map((p) => p.package).join("\n              ")}
             ];
           };
         }
