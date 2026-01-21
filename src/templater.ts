@@ -5,6 +5,7 @@ export interface NixPackage {
 
 interface LangStepChoiceOption {
   label: string;
+  hint?: string;
   packages: NixPackage[];
 }
 
