@@ -3,15 +3,16 @@ export interface NixPackage {
   package: string;
 }
 
-interface LangStepChoiceOption {
-  label: string;
-  hint?: string;
-  packages: NixPackage[];
-}
-
 export interface LangStepChoice {
   prompt: string;
-  choices: Record<string, LangStepChoiceOption>;
+  choices: Record<
+    string,
+    {
+      label: string;
+      hint?: string;
+      packages: NixPackage[];
+    }
+  >;
 }
 
 export interface LangConfig {
