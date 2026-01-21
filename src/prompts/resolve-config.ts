@@ -1,4 +1,4 @@
-import { confirm, multiselect, select } from "@clack/prompts";
+import { autocomplete, confirm, multiselect, select } from "@clack/prompts";
 import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
 import { ensureAnswer, typeSafeEntries, typeSafeKeys } from "../utils";
@@ -131,8 +131,9 @@ export const resolveConfig = async () => {
   );
 
   const lang = ensureAnswer(
-    await select({
+    await autocomplete({
       message: "Pick a language preset",
+      placeholder: "Type to search",
       options: typeSafeKeys(langConfigs).map((langValue) => ({
         value: langValue,
         label: langValue,
