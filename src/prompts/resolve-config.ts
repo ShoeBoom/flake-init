@@ -86,8 +86,6 @@ const templates = {
   },
 } satisfies Record<string, TemplateConfig>;
 
-export type TemplateName = keyof typeof templates;
-
 const resolveTemplate = async () => {
   return ensureAnswer(
     await select({
@@ -156,7 +154,7 @@ export const resolveConfig = async () => {
 };
 
 export const renderTemplate = (
-  template: TemplateName,
+  template: keyof typeof templates,
   props: { packages: NixPackage[]; supportedSystems: string[] }
 ) => {
   return templates[template].template(props);
