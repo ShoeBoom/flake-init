@@ -1,7 +1,7 @@
 import { select } from "@clack/prompts";
 import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
-import { ensureAnswer } from "../utils";
+import { ensureAnswer, typeSafeEntries } from "../utils";
 
 const selectPackages = async (langKey: keyof typeof langConfigs) => {
   const lang = langConfigs[langKey];
@@ -11,17 +11,14 @@ const selectPackages = async (langKey: keyof typeof langConfigs) => {
 
   const selectedPackages: NixPackage[] = [];
   for (const step of lang.packages.steps) {
-    const entries = Object.entries(step.choices);
-    const options = entries.map(([key, choice]) => ({
-      value: key,
-      hint: choice.hint,
-      label: choice.label,
-    }));
-
     const selected = ensureAnswer(
       await select({
         message: step.prompt,
-        options,
+        options: typeSafeEntries(step.choices).map(([key, choice]) => ({
+          value: key,
+          hint: choice.hint,
+          label: choice.label,
+        })),
       })
     );
 
