@@ -1,19 +1,21 @@
-type NixPackage = {
+export type NixPackage = {
   name: string;
-  package: string
+  package: string;
 };
 
-type LangStepChoice = {
+export type LangStepChoice = {
   prompt: string;
-  choices: Record<string, NixPackage[]>
-}
+  choices: Record<string, NixPackage[]>;
+};
 
 export type LangConfig = {
   name: string;
   packages: {
     steps: LangStepChoice[];
   }
-}
+};
+
+export type TemplateName = "base" | "flake-parts";
 
 const templates = {
   "flake-parts": ({ packages, supportedSystems }) => `
@@ -34,7 +36,7 @@ const templates = {
     perSystem = {pkgs, system, ...}: {
       packages.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            ${packages.map((p) => `p.${p.package}`).join("\n")}
+            ${packages.map((p) => p.package).join("\n")}
           ];
         };
     };
@@ -79,4 +81,8 @@ const templates = {
     };
 }
   `,
-} satisfies Record<string, (props: { packages: NixPackage[], supportedSystems: string[] }) => string>
+} satisfies Record<TemplateName, (props: { packages: NixPackage[]; supportedSystems: string[] }) => string>;
+
+export const renderTemplate = (template: TemplateName, props: { packages: NixPackage[]; supportedSystems: string[] }) => {
+  return templates[template](props);
+};
