@@ -6,6 +6,8 @@ type LangStepChoice = {
 }
 
 type LangConfig = {
+  name: string;
+  template: "flake-parts" | "flake-utils" | "none";
   packages: {
     steps: LangStepChoice[];
   }
