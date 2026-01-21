@@ -86,19 +86,6 @@ const templates = {
   },
 } satisfies Record<string, TemplateConfig>;
 
-const resolveTemplate = async () => {
-  return ensureAnswer(
-    await select({
-      message: "Select a flake template",
-      options: typeSafeEntries(templates).map(([name, config]) => ({
-        value: name,
-        label: config.name,
-        hint: config.hint,
-      })),
-    })
-  );
-};
-
 const resolveSupportedSystems = async () => {
   return ensureAnswer(
     await multiselect({
@@ -126,25 +113,27 @@ const resolveSupportedSystems = async () => {
   );
 };
 
-const resolveLang = async () => {
-  const availableLangs = typeSafeKeys(langConfigs);
-  const langOptions = availableLangs.map((langValue) => ({
-    value: langValue,
-    label: langValue,
-  }));
-
-  return ensureAnswer(
+export const resolveConfig = async () => {
+  const template = ensureAnswer(
     await select({
-      message: "Pick a language preset",
-      options: langOptions,
+      message: "Select a flake template",
+      options: typeSafeEntries(templates).map(([name, config]) => ({
+        value: name,
+        label: config.name,
+        hint: config.hint,
+      })),
     })
   );
-};
-
-export const resolveConfig = async () => {
-  const template = await resolveTemplate();
   const supportedSystems = await resolveSupportedSystems();
-  const lang = await resolveLang();
+  const lang = ensureAnswer(
+    await select({
+      message: "Pick a language preset",
+      options: typeSafeKeys(langConfigs).map((langValue) => ({
+        value: langValue,
+        label: langValue,
+      })),
+    })
+  );
 
   return {
     template,
