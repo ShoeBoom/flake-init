@@ -5,6 +5,7 @@ const nodeVersionStep: LangStepChoice = {
   choices: {
     nodejs_22: {
       label: "22",
+      hint: "Node.js 22",
       packages: [
         {
           name: "22",
@@ -14,6 +15,7 @@ const nodeVersionStep: LangStepChoice = {
     },
     nodejs_20: {
       label: "20",
+      hint: "Node.js 20",
       packages: [
         {
           name: "20",
@@ -23,6 +25,7 @@ const nodeVersionStep: LangStepChoice = {
     },
     nodejs_25: {
       label: "25",
+      hint: "Node.js 25",
       packages: [
         {
           name: "25",

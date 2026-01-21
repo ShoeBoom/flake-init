@@ -13,6 +13,7 @@ const selectPackages = async (langKey: keyof typeof langConfigs) => {
       const entries = Object.entries(step.choices);
       const options = entries.map(([key, choice]) => ({
         value: key,
+        hint: choice.hint,
         label: choice.label,
       }));
 
