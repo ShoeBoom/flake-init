@@ -1,6 +1,6 @@
 type NixPackage = {
   name: string;
-  package: string & { __brand: "NixPackage" }
+  package: string
 };
 
 type LangStepChoice = {
@@ -8,7 +8,7 @@ type LangStepChoice = {
   choices: Record<string, NixPackage[]>
 }
 
-type LangConfig = {
+export type LangConfig = {
   name: string;
   packages: {
     steps: LangStepChoice[];
