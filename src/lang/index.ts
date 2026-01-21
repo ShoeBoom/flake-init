@@ -14,4 +14,9 @@ type LangConfig = {
   }
 }
 
-type Template = "flake"
+const templates = [
+  "flake-utils",
+  "flake-parts",
+  "base",
+  "devenv",
+]
