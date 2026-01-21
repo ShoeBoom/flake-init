@@ -3,8 +3,6 @@ import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
 import { ensureAnswer, typeSafeEntries, typeSafeKeys } from "../utils";
 
-// const systemOptions =  as const;
-
 interface TemplateConfig {
   template: (props: {
     packages: NixPackage[];
