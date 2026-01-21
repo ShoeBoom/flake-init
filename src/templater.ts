@@ -1,24 +1,24 @@
-export type NixPackage = {
+export interface NixPackage {
   name: string;
   package: string;
-};
+}
 
-export type LangStepChoiceOption = {
+export interface LangStepChoiceOption {
   label: string;
   packages: NixPackage[];
-};
+}
 
-export type LangStepChoice = {
+export interface LangStepChoice {
   prompt: string;
   choices: Record<string, LangStepChoiceOption>;
-};
+}
 
-export type LangConfig = {
+export interface LangConfig {
   name: string;
   packages: {
     steps: LangStepChoice[];
   };
-};
+}
 
 export type TemplateName = "base" | "flake-parts";
 

@@ -20,11 +20,11 @@ import {
   type TemplateName,
 } from "./templater";
 
-type CliConfig = {
+interface CliConfig {
   template: TemplateName;
   lang: string;
   supportedSystems: string[];
-};
+}
 
 const templateOptions: { value: TemplateName; label: string; hint: string }[] =
   [
@@ -87,82 +87,129 @@ const parseArgs = () => {
   });
 };
 
+const normalizeTemplate = (value: unknown): TemplateName | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const template = value as TemplateName;
+  return templateOptions.some((option) => option.value === template)
+    ? template
+    : undefined;
+};
+
+const normalizeLang = (
+  value: unknown,
+  availableLangs: string[]
+): string | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  return availableLangs.includes(value) ? value : undefined;
+};
+
+const normalizeSystems = (value: unknown): string[] | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const supportedSystems = value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return supportedSystems.length > 0 ? supportedSystems : undefined;
+};
+
+const resolveTemplate = async (
+  value: unknown,
+  skipPrompts: boolean
+): Promise<TemplateName> => {
+  const template = normalizeTemplate(value);
+  if (template) {
+    return template;
+  }
+
+  if (skipPrompts) {
+    return "base";
+  }
+
+  return ensureAnswer(
+    await select({
+      message: "Select a flake template",
+      options: templateOptions,
+    })
+  );
+};
+
+const resolveSupportedSystems = async (
+  value: unknown,
+  skipPrompts: boolean
+): Promise<string[]> => {
+  const supportedSystems = normalizeSystems(value);
+  if (supportedSystems) {
+    return supportedSystems;
+  }
+
+  if (skipPrompts) {
+    return ["x86_64-linux", "aarch64-darwin"];
+  }
+
+  return ensureAnswer(
+    await multiselect({
+      message: "Supported systems",
+      options: systemOptions,
+      required: true,
+    })
+  );
+};
+
+const resolveLang = async (
+  value: unknown,
+  availableLangs: string[],
+  defaultLang: string,
+  skipPrompts: boolean
+): Promise<string> => {
+  const lang = normalizeLang(value, availableLangs);
+  if (lang) {
+    return lang;
+  }
+
+  if (skipPrompts) {
+    return defaultLang;
+  }
+
+  const langOptions = availableLangs.map((langValue) => ({
+    value: langValue,
+    label: toTitle(langValue),
+  }));
+
+  return ensureAnswer(
+    await select({
+      message: "Pick a language preset",
+      options: langOptions,
+    })
+  );
+};
+
 const resolveConfig = async (): Promise<CliConfig> => {
   const args = parseArgs();
   const availableLangs = Object.keys(langConfigs);
   const defaultLang = availableLangs[0] ?? "node";
-
-  let template = args.template as TemplateName | undefined;
-  if (
-    template &&
-    !templateOptions.some((option) => option.value === template)
-  ) {
-    template = undefined;
-  }
-
-  let lang = typeof args.lang === "string" ? args.lang : undefined;
-  if (lang && !availableLangs.includes(lang)) {
-    lang = undefined;
-  }
-
-  let supportedSystems =
-    typeof args.systems === "string"
-      ? args.systems
-          .split(",")
-          .map((value: string) => value.trim())
-          .filter(Boolean)
-      : undefined;
-
-  if (supportedSystems && supportedSystems.length === 0) {
-    supportedSystems = undefined;
-  }
-
   const skipPrompts = Boolean(args.yes);
 
-  if (!template) {
-    if (skipPrompts) {
-      template = "base";
-    } else {
-      template = ensureAnswer(
-        await select({
-          message: "Select a flake template",
-          options: templateOptions,
-        })
-      );
-    }
-  }
-
-  if (!supportedSystems) {
-    if (skipPrompts) {
-      supportedSystems = ["x86_64-linux", "aarch64-darwin"];
-    } else {
-      supportedSystems = ensureAnswer(
-        await multiselect({
-          message: "Supported systems",
-          options: systemOptions,
-          required: true,
-        })
-      );
-    }
-  }
-
-  if (!lang) {
-    if (skipPrompts) {
-      lang = defaultLang;
-    } else {
-      const langOptions = availableLangs.map((value) => ({
-        value,
-        label: toTitle(value),
-      }));
-
-      lang = ensureAnswer(
-        await select({
-          message: "Pick a language preset",
-          options: langOptions,
-        })
-      );
-    }
-  }
+  const template = await resolveTemplate(args.template, skipPrompts);
+  const supportedSystems = await resolveSupportedSystems(
+    args.systems,
+    skipPrompts
+  );
+  const lang = await resolveLang(
+    args.lang,
+    availableLangs,
+    defaultLang,
+    skipPrompts
+  );
 
   return {
     template,
