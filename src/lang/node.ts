@@ -1,4 +1,4 @@
-import type { LangConfig } from "./index";
+import type { LangConfig } from "../templater";
 export default {
   name: "node",
   packages: {
