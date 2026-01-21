@@ -8,7 +8,6 @@ const nodeVersionStep: LangStepChoice = {
       hint: "Node.js 22",
       packages: [
         {
-          name: "22",
           package: "nodejs_22",
         },
       ],
@@ -18,7 +17,6 @@ const nodeVersionStep: LangStepChoice = {
       hint: "Node.js 20",
       packages: [
         {
-          name: "20",
           package: "nodejs_20",
         },
       ],
@@ -28,7 +26,6 @@ const nodeVersionStep: LangStepChoice = {
       hint: "Node.js 25",
       packages: [
         {
-          name: "25",
           package: "nodejs_25",
         },
       ],
@@ -48,7 +45,6 @@ const packageManagerStep: LangStepChoice = {
       label: "pnpm",
       packages: [
         {
-          name: "pnpm",
           package: "pnpm",
         },
       ],
@@ -57,7 +53,6 @@ const packageManagerStep: LangStepChoice = {
       label: "yarn",
       packages: [
         {
-          name: "yarn",
           package: "yarn",
         },
       ],
@@ -66,7 +61,6 @@ const packageManagerStep: LangStepChoice = {
       label: "bun",
       packages: [
         {
-          name: "bun",
           package: "bun",
         },
       ],

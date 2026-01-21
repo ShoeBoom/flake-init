@@ -1,5 +1,4 @@
 export interface NixPackage {
-  name: string;
   package: string;
 }
 
