@@ -71,5 +71,6 @@ const packageManagerStep: LangStepChoice = {
 export default {
   packages: {
     steps: [nodeVersionStep, packageManagerStep],
+    defaults: [],
   },
 } satisfies LangConfig;

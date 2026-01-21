@@ -17,5 +17,6 @@ export interface LangStepChoice {
 export interface LangConfig {
   packages: {
     steps: LangStepChoice[];
+    defaults: NixPackage[];
   };
 }

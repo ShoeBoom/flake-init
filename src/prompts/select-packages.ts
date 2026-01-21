@@ -10,6 +10,7 @@ export const selectPackages = async (langKey: keyof typeof langConfigs) => {
   }
 
   const selectedPackages: NixPackage[] = [];
+  selectedPackages.push(...(lang.packages.defaults ?? []));
   for (const step of lang.packages.steps) {
     const selected = ensureAnswer(
       await select({
