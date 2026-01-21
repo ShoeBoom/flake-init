@@ -1,6 +1,8 @@
 import type { LangConfig } from "../templater";
 import node from "./node";
 
-export default {
+const configs = {
   node,
-} satisfies Record<string, LangConfig>;
+} as const satisfies Record<string, LangConfig>;
+
+export default configs;

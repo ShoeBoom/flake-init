@@ -13,28 +13,19 @@ import {
 } from "@clack/prompts";
 import chalk from "chalk";
 import langConfigs from "./lang";
-import { type NixPackage, renderTemplate } from "./templater";
-
-type TemplateName = "base" | "flake-parts";
+import {
+  type NixPackage,
+  renderTemplate,
+  type TemplateName,
+  templates,
+} from "./templater";
+import { typeSafeEntries, typeSafeKeys } from "./utils";
 
 interface CliConfig {
   template: TemplateName;
   lang: string;
   supportedSystems: string[];
 }
-
-const templateOptions = [
-  {
-    value: "base",
-    label: "Base flake",
-    hint: "Simple mkShell setup",
-  },
-  {
-    value: "flake-parts",
-    label: "Flake parts",
-    hint: "Hercules flake-parts layout",
-  },
-] satisfies { value: TemplateName; label: string; hint: string }[];
 
 const systemOptions = [
   {
@@ -70,11 +61,15 @@ const ensureAnswer = <T>(answer: T | symbol): T => {
   return answer;
 };
 
-const resolveTemplate = async (): Promise<TemplateName> => {
+const resolveTemplate = async () => {
   return ensureAnswer(
-    await select({
+    await select<TemplateName>({
       message: "Select a flake template",
-      options: templateOptions,
+      options: typeSafeEntries(templates).map(([templateName, template]) => ({
+        value: templateName,
+        label: template.name,
+        hint: template.hint,
+      })),
     })
   );
 };
@@ -104,7 +99,7 @@ const resolveLang = async (availableLangs: string[]): Promise<string> => {
 };
 
 const resolveConfig = async (): Promise<CliConfig> => {
-  const availableLangs = Object.keys(langConfigs);
+  const availableLangs = typeSafeKeys(langConfigs);
 
   const template = await resolveTemplate();
   const supportedSystems = await resolveSupportedSystems();
@@ -118,11 +113,8 @@ const resolveConfig = async (): Promise<CliConfig> => {
 };
 
 const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
-  const configs: Record<
-    string,
-    (typeof langConfigs)[keyof typeof langConfigs]
-  > = langConfigs;
-  const lang = configs[langKey];
+  const configs = langConfigs;
+  const lang = configs[langKey as keyof typeof langConfigs];
   if (!lang) {
     return [];
   }

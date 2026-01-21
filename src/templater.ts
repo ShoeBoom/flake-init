@@ -20,9 +20,10 @@ export interface LangConfig {
   };
 }
 
-const templates = {
+export const templates = {
   "flake-parts": {
     name: "flake-parts",
+    hint: "Hercules flake-parts layout",
     template: ({ packages, supportedSystems }) => `
     {
   description = "Dev environment (flake-parts)";
@@ -51,6 +52,7 @@ const templates = {
   },
   base: {
     name: "base",
+    hint: "Simple mkShell setup",
     template: ({ packages, supportedSystems }) => `
 {
   description = "Dev environment";
@@ -97,11 +99,12 @@ const templates = {
       packages: NixPackage[];
       supportedSystems: string[];
     }) => string;
+    hint: string;
     name: string;
   }
 >;
 
-type TemplateName = keyof typeof templates;
+export type TemplateName = keyof typeof templates;
 
 export const renderTemplate = (
   template: TemplateName,
