@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { cancel, confirm, intro, outro, spinner } from "@clack/prompts";
 import chalk from "chalk";
+import { createEnvrc } from "./extras/extra";
 import { renderTemplate, resolveConfig } from "./prompts/resolve-config";
 import { selectPackages } from "./prompts/select-packages";
 import { ensureAnswer } from "./utils";
@@ -42,6 +43,10 @@ const run = async () => {
   spin.start("Writing flake.nix");
   const outputPath = await writeFlake(template);
   spin.stop("Flake created");
+
+  if (config.createEncrc) {
+    await createEnvrc(spin);
+  }
 
   outro(
     `${chalk.green("Done!")} Wrote ${chalk.cyan(path.relative(process.cwd(), outputPath))} with ${chalk.bold(

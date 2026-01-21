@@ -1,4 +1,4 @@
-import { multiselect, select } from "@clack/prompts";
+import { confirm, multiselect, select } from "@clack/prompts";
 import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
 import { ensureAnswer, typeSafeEntries, typeSafeKeys } from "../utils";
@@ -123,6 +123,13 @@ export const resolveConfig = async () => {
     })
   );
 
+  const createEncrc = ensureAnswer(
+    await confirm({
+      message: "Create .envrc file?",
+      initialValue: true,
+    })
+  );
+
   const lang = ensureAnswer(
     await select({
       message: "Pick a language preset",
@@ -136,6 +143,7 @@ export const resolveConfig = async () => {
   return {
     template,
     lang,
+    createEncrc,
     supportedSystems,
   };
 };
