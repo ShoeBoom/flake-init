@@ -17,7 +17,7 @@ export type LangConfig = {
   name: string;
   packages: {
     steps: LangStepChoice[];
-  }
+  };
 };
 
 export type TemplateName = "base" | "flake-parts";
@@ -48,7 +48,7 @@ const templates = {
   });
 }
   `,
-  "base": ({ packages, supportedSystems }) => `
+  base: ({ packages, supportedSystems }) => `
 {
   description = "Dev environment";
 
@@ -86,8 +86,14 @@ const templates = {
     };
 }
   `,
-} satisfies Record<TemplateName, (props: { packages: NixPackage[]; supportedSystems: string[] }) => string>;
+} satisfies Record<
+  TemplateName,
+  (props: { packages: NixPackage[]; supportedSystems: string[] }) => string
+>;
 
-export const renderTemplate = (template: TemplateName, props: { packages: NixPackage[]; supportedSystems: string[] }) => {
+export const renderTemplate = (
+  template: TemplateName,
+  props: { packages: NixPackage[]; supportedSystems: string[] }
+) => {
   return templates[template](props);
 };

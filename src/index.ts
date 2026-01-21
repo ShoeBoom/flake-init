@@ -1,11 +1,24 @@
-import { cancel, confirm, intro, isCancel, multiselect, outro, select, spinner } from "@clack/prompts";
-import chalk from "chalk";
-import mri from "mri";
 import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  cancel,
+  confirm,
+  intro,
+  isCancel,
+  multiselect,
+  outro,
+  select,
+  spinner,
+} from "@clack/prompts";
+import chalk from "chalk";
+import mri from "mri";
 import langConfigs from "./lang";
-import { renderTemplate, type NixPackage, type TemplateName } from "./templater";
+import {
+  type NixPackage,
+  renderTemplate,
+  type TemplateName,
+} from "./templater";
 
 type CliConfig = {
   template: TemplateName;
@@ -13,18 +26,19 @@ type CliConfig = {
   supportedSystems: string[];
 };
 
-const templateOptions: { value: TemplateName; label: string; hint: string }[] = [
-  {
-    value: "base",
-    label: "Base flake",
-    hint: "Simple mkShell setup",
-  },
-  {
-    value: "flake-parts",
-    label: "Flake parts",
-    hint: "Hercules flake-parts layout",
-  },
-];
+const templateOptions: { value: TemplateName; label: string; hint: string }[] =
+  [
+    {
+      value: "base",
+      label: "Base flake",
+      hint: "Simple mkShell setup",
+    },
+    {
+      value: "flake-parts",
+      label: "Flake parts",
+      hint: "Hercules flake-parts layout",
+    },
+  ];
 
 const systemOptions = [
   {
@@ -49,7 +63,8 @@ const systemOptions = [
   },
 ];
 
-const toTitle = (value: string) => value.slice(0, 1).toUpperCase() + value.slice(1);
+const toTitle = (value: string) =>
+  value.slice(0, 1).toUpperCase() + value.slice(1);
 
 const ensureAnswer = <T>(answer: T | symbol): T => {
   if (isCancel(answer)) {
@@ -78,7 +93,10 @@ const resolveConfig = async (): Promise<CliConfig> => {
   const defaultLang = availableLangs[0] ?? "node";
 
   let template = args.template as TemplateName | undefined;
-  if (template && !templateOptions.some((option) => option.value === template)) {
+  if (
+    template &&
+    !templateOptions.some((option) => option.value === template)
+  ) {
     template = undefined;
   }
 
@@ -87,9 +105,13 @@ const resolveConfig = async (): Promise<CliConfig> => {
     lang = undefined;
   }
 
-  let supportedSystems = typeof args.systems === "string"
-    ? args.systems.split(",").map((value: string) => value.trim()).filter(Boolean)
-    : undefined;
+  let supportedSystems =
+    typeof args.systems === "string"
+      ? args.systems
+          .split(",")
+          .map((value: string) => value.trim())
+          .filter(Boolean)
+      : undefined;
 
   if (supportedSystems && supportedSystems.length === 0) {
     supportedSystems = undefined;
@@ -150,7 +172,10 @@ const resolveConfig = async (): Promise<CliConfig> => {
 };
 
 const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
-  const configs = langConfigs as Record<string, typeof langConfigs[keyof typeof langConfigs]>;
+  const configs = langConfigs as Record<
+    string,
+    (typeof langConfigs)[keyof typeof langConfigs]
+  >;
   const lang = configs[langKey];
   if (!lang) {
     return [];
@@ -158,7 +183,10 @@ const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
 
   const selectedPackages: NixPackage[] = [];
   for (const step of lang.packages.steps) {
-    const choices = step.choices as unknown as Record<string, { label: string; packages: NixPackage[] }>;
+    const choices = step.choices as unknown as Record<
+      string,
+      { label: string; packages: NixPackage[] }
+    >;
     const entries = Object.entries(choices);
     const options = entries.map(([key, choice]) => ({
       value: key,

@@ -9,7 +9,7 @@ const nodeVersionStep: LangStepChoice = {
         {
           name: "22",
           package: "nodejs_22",
-        }
+        },
       ],
     },
     nodejs_20: {
@@ -18,7 +18,7 @@ const nodeVersionStep: LangStepChoice = {
         {
           name: "20",
           package: "nodejs_20",
-        }
+        },
       ],
     },
     nodejs_25: {
@@ -27,7 +27,7 @@ const nodeVersionStep: LangStepChoice = {
         {
           name: "25",
           package: "nodejs_25",
-        }
+        },
       ],
     },
   },
@@ -46,7 +46,7 @@ const packageManagerStep: LangStepChoice = {
         {
           name: "pnpm",
           package: "pnpm",
-        }
+        },
       ],
     },
     yarn: {
@@ -55,7 +55,7 @@ const packageManagerStep: LangStepChoice = {
         {
           name: "yarn",
           package: "yarn",
-        }
+        },
       ],
     },
     bun: {
@@ -64,7 +64,7 @@ const packageManagerStep: LangStepChoice = {
         {
           name: "bun",
           package: "bun",
-        }
+        },
       ],
     },
   },
