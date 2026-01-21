@@ -1,5 +1,9 @@
-import { existsSync } from "node:fs";
-import { appendFile, readFile, writeFile } from "node:fs/promises";
+import {
+  appendFile,
+  exists as existsFs,
+  readFile,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import type { spinner } from "@clack/prompts";
 
@@ -17,7 +21,7 @@ export const createEnvrc = async (spin: ReturnType<typeof spinner>) => {
 
 export const updateGitignore = async (spin: ReturnType<typeof spinner>) => {
   const gitignorePath = path.join(process.cwd(), ".gitignore");
-  const exists = existsSync(gitignorePath);
+  const exists = await existsFs(gitignorePath);
 
   if (exists) {
     const gitignoreContents = await readFile(gitignorePath, "utf8");

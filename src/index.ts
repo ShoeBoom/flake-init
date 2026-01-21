@@ -1,5 +1,4 @@
-import { existsSync } from "node:fs";
-import { writeFile } from "node:fs/promises";
+import { exists as existsFs, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { cancel, confirm, intro, outro, spinner } from "@clack/prompts";
 import chalk from "chalk";
@@ -10,7 +9,7 @@ import { ensureAnswer } from "./utils";
 
 const writeFlake = async (flakeContents: string) => {
   const outputPath = path.join(process.cwd(), "flake.nix");
-  if (existsSync(outputPath)) {
+  if (await existsFs(outputPath)) {
     const overwrite = ensureAnswer(
       await confirm({
         message: "flake.nix already exists. Overwrite it?",
