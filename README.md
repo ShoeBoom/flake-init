@@ -1,21 +1,31 @@
 # flake-init
 
-To install dependencies:
+Interactive CLI for generating a Nix flake dev environment. It guides you through choosing a template, supported systems, and language-specific packages, then writes a `flake.nix` (and optionally a `.envrc`).
+
+## Features
+
+- Select a flake template (`base` or `flake-parts`)
+- Choose supported systems (Linux/macOS, Intel/ARM)
+- Pick a language preset (currently Node.js) and package manager
+- Optional `.envrc` creation for direnv
+
+## Usage
+
+Run the latest release (macOS/Linux):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ShoeBoom/flake-init/main/run.sh | sh -s --
+```
+
+Run from source:
 
 ```bash
 bun install
+bun run src/index.ts
 ```
 
-To run:
+## Development
 
 ```bash
-bun run index.ts
+bun run start
 ```
-
-To run the latest release without installing (macOS/Linux only):
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/ShoeBoom/flake-init/main/run.sh | sh -s -- <args>
-```
-
-This project was created using `bun init` in bun v1.3.6. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
