@@ -1,6 +1,5 @@
 import { select } from "@clack/prompts";
 import langConfigs from "../lang";
-import type { NixPackage } from "../templater";
 import { ensureAnswer } from "./resolve-config";
 
 const selectPackages = async (langKey: keyof typeof langConfigs) => {
@@ -9,26 +8,28 @@ const selectPackages = async (langKey: keyof typeof langConfigs) => {
     return [];
   }
 
-  const selectedPackages: NixPackage[] = [];
-  for (const step of lang.packages.steps) {
-    const entries = Object.entries(step.choices);
-    const options = entries.map(([key, choice]) => ({
-      value: key,
-      label: choice.label,
-    }));
+  const selectedPackages = await Promise.all(
+    lang.packages.steps.map(async (step) => {
+      const entries = Object.entries(step.choices);
+      const options = entries.map(([key, choice]) => ({
+        value: key,
+        label: choice.label,
+      }));
 
-    const selected = ensureAnswer(
-      await select({
-        message: step.prompt,
-        options,
-      })
-    );
+      const selected = ensureAnswer(
+        await select({
+          message: step.prompt,
+          options,
+        })
+      );
 
-    const selectedPackagesForStep = step.choices[selected]?.packages ?? [];
-    selectedPackages.push(...selectedPackagesForStep);
-  }
+      return step.choices[selected]?.packages ?? [];
+    })
+  );
 
-  return selectedPackages;
+  const flattenedPackages = selectedPackages.flat();
+
+  return flattenedPackages;
 };
 
 export { selectPackages };
