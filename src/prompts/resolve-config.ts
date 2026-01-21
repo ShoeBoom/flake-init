@@ -6,22 +6,18 @@ import { typeSafeEntries, typeSafeKeys } from "../utils";
 const systemOptions = [
   {
     value: "x86_64-linux",
-    label: "x86_64-linux",
     hint: "Linux (Intel/AMD)",
   },
   {
     value: "aarch64-linux",
-    label: "aarch64-linux",
     hint: "Linux (ARM)",
   },
   {
     value: "x86_64-darwin",
-    label: "x86_64-darwin",
     hint: "macOS (Intel)",
   },
   {
     value: "aarch64-darwin",
-    label: "aarch64-darwin",
     hint: "macOS (Apple Silicon)",
   },
 ] as const;
@@ -138,7 +134,7 @@ const resolveSupportedSystems = async () => {
       message: "Supported systems",
       options: systemOptions.map((option) => ({
         value: option.value,
-        label: option.label,
+        label: option.value,
         hint: option.hint,
       })),
       required: true,
