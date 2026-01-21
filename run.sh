@@ -68,6 +68,22 @@ sha256() {
   exit 1
 }
 
+run_binary() {
+  if [ -t 0 ]; then
+    exec "$CACHE_PATH" "$@"
+  fi
+
+  if [ -r /dev/tty ] && command -v script >/dev/null 2>&1; then
+    exec script -q /dev/null "$CACHE_PATH" "$@" </dev/tty >/dev/tty 2>/dev/tty
+  fi
+
+  if [ -r /dev/tty ]; then
+    exec "$CACHE_PATH" "$@" </dev/tty >/dev/tty 2>/dev/tty
+  fi
+
+  exec "$CACHE_PATH" "$@"
+}
+
 download "$SUMS_URL" "$SUMS_PATH"
 
 EXPECTED_SHA="$(grep " $ASSET$" "$SUMS_PATH" | awk '{print $1}')"
@@ -79,7 +95,7 @@ fi
 if [ -f "$CACHE_PATH" ]; then
   CACHED_SHA="$(sha256 "$CACHE_PATH")"
   if [ "$CACHED_SHA" = "$EXPECTED_SHA" ]; then
-    exec "$CACHE_PATH" "$@"
+    run_binary "$@"
   fi
 fi
 
@@ -94,4 +110,4 @@ if [ "$DOWNLOADED_SHA" != "$EXPECTED_SHA" ]; then
 fi
 
 mv "$ASSET_TMP" "$CACHE_PATH"
-exec "$CACHE_PATH" "$@"
+run_binary "$@"
