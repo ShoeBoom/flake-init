@@ -106,9 +106,9 @@ const resolveConfig = async () => {
   };
 };
 
-const selectPackages = async (langKey: string) => {
+const selectPackages = async (langKey: keyof typeof langConfigs) => {
   const configs = langConfigs;
-  const lang = configs[langKey as keyof typeof langConfigs];
+  const lang = configs[langKey];
   if (!lang) {
     return [];
   }
