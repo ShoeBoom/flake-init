@@ -134,7 +134,7 @@ const resolveTemplate = async () => {
 
 const resolveSupportedSystems = async () => {
   return ensureAnswer(
-    await multiselect<(typeof systemOptions)[number]["value"]>({
+    await multiselect({
       message: "Supported systems",
       options: systemOptions.map((option) => ({
         value: option.value,
