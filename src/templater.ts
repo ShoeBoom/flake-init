@@ -3,7 +3,7 @@ export interface NixPackage {
   package: string;
 }
 
-export interface LangStepChoiceOption {
+interface LangStepChoiceOption {
   label: string;
   packages: NixPackage[];
 }
@@ -19,96 +19,3 @@ export interface LangConfig {
     steps: LangStepChoice[];
   };
 }
-
-export const templates = {
-  "flake-parts": {
-    name: "flake-parts",
-    hint: "Hercules flake-parts layout",
-    template: ({ packages, supportedSystems }) => `
-    {
-  description = "Dev environment (flake-parts)";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    "flake-parts".url = "github:hercules-ci/flake-parts";
-  };
-
-  outputs = inputs@{nixpkgs, flake-parts, ...}:
-    flake-parts.lib.mkFlake { inherit inputs; } (top@{ config, withSystem, moduleWithSystem, ... }: {
-    systems = [
-      ${supportedSystems.map((s) => `"${s}"`).join("\n")}
-    ];
-
-    perSystem = {pkgs, system, ...}: {
-      packages.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            ${packages.map((p) => p.package).join("\n")}
-          ];
-        };
-    };
-  });
-}
-  `,
-  },
-  base: {
-    name: "base",
-    hint: "Simple mkShell setup",
-    template: ({ packages, supportedSystems }) => `
-{
-  description = "Dev environment";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  };
-
-  outputs =
-    { self, ... }@inputs:
-
-    let
-      supportedSystems = [
-        ${supportedSystems.map((s) => `"${s}"`).join("\n")}
-      ];
-      forEachSupportedSystem =
-        f:
-        inputs.nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import inputs.nixpkgs { inherit system; };
-          }
-        );
-    in
-    {
-      devShells = forEachSupportedSystem (
-        { pkgs }:
-        {
-          default = pkgs.mkShellNoCC {
-            packages = with pkgs; [
-              ${packages.map((p) => p.package).join("\n")}
-            ];
-          };
-        }
-      );
-    };
-}
-  `,
-  },
-} satisfies Record<
-  string,
-  {
-    template: (props: {
-      packages: NixPackage[];
-      supportedSystems: string[];
-    }) => string;
-    hint: string;
-    name: string;
-  }
->;
-
-export type TemplateName = keyof typeof templates;
-
-export const renderTemplate = (
-  template: TemplateName,
-  props: { packages: NixPackage[]; supportedSystems: string[] }
-) => {
-  return templates[template].template(props);
-};
