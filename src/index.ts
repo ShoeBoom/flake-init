@@ -36,12 +36,6 @@ const templateOptions = [
   },
 ] satisfies { value: TemplateName; label: string; hint: string }[];
 
-const templateNames = ["base", "flake-parts"] as const;
-
-const isTemplateName = (value: string): value is TemplateName => {
-  return (templateNames as readonly string[]).includes(value);
-};
-
 const systemOptions = [
   {
     value: "x86_64-linux",

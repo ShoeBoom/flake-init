@@ -20,10 +20,10 @@ export interface LangConfig {
   };
 }
 
-export type TemplateName = "base" | "flake-parts";
-
 const templates = {
-  "flake-parts": ({ packages, supportedSystems }) => `
+  "flake-parts": {
+    name: "flake-parts",
+    template: ({ packages, supportedSystems }) => `
     {
   description = "Dev environment (flake-parts)";
 
@@ -48,7 +48,10 @@ const templates = {
   });
 }
   `,
-  base: ({ packages, supportedSystems }) => `
+  },
+  base: {
+    name: "base",
+    template: ({ packages, supportedSystems }) => `
 {
   description = "Dev environment";
 
@@ -86,14 +89,23 @@ const templates = {
     };
 }
   `,
+  },
 } satisfies Record<
-  TemplateName,
-  (props: { packages: NixPackage[]; supportedSystems: string[] }) => string
+  string,
+  {
+    template: (props: {
+      packages: NixPackage[];
+      supportedSystems: string[];
+    }) => string;
+    name: string;
+  }
 >;
+
+type TemplateName = keyof typeof templates;
 
 export const renderTemplate = (
   template: TemplateName,
   props: { packages: NixPackage[]; supportedSystems: string[] }
 ) => {
-  return templates[template](props);
+  return templates[template].template(props);
 };
