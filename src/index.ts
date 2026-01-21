@@ -12,13 +12,10 @@ import {
   spinner,
 } from "@clack/prompts";
 import chalk from "chalk";
-import mri from "mri";
 import langConfigs from "./lang";
-import {
-  type NixPackage,
-  renderTemplate,
-  type TemplateName,
-} from "./templater";
+import { type NixPackage, renderTemplate } from "./templater";
+
+type TemplateName = "base" | "flake-parts";
 
 interface CliConfig {
   template: TemplateName;
@@ -26,19 +23,24 @@ interface CliConfig {
   supportedSystems: string[];
 }
 
-const templateOptions: { value: TemplateName; label: string; hint: string }[] =
-  [
-    {
-      value: "base",
-      label: "Base flake",
-      hint: "Simple mkShell setup",
-    },
-    {
-      value: "flake-parts",
-      label: "Flake parts",
-      hint: "Hercules flake-parts layout",
-    },
-  ];
+const templateOptions = [
+  {
+    value: "base",
+    label: "Base flake",
+    hint: "Simple mkShell setup",
+  },
+  {
+    value: "flake-parts",
+    label: "Flake parts",
+    hint: "Hercules flake-parts layout",
+  },
+] satisfies { value: TemplateName; label: string; hint: string }[];
+
+const templateNames = ["base", "flake-parts"] as const;
+
+const isTemplateName = (value: string): value is TemplateName => {
+  return (templateNames as readonly string[]).includes(value);
+};
 
 const systemOptions = [
   {
@@ -64,7 +66,7 @@ const systemOptions = [
 ];
 
 const toTitle = (value: string) =>
-  value.slice(0, 1).toUpperCase() + value.slice(1);
+  `${value.slice(0, 1).toUpperCase()}${value.slice(1)}`;
 
 const ensureAnswer = <T>(answer: T | symbol): T => {
   if (isCancel(answer)) {
@@ -74,67 +76,7 @@ const ensureAnswer = <T>(answer: T | symbol): T => {
   return answer;
 };
 
-const parseArgs = () => {
-  return mri(process.argv.slice(2), {
-    string: ["template", "lang", "systems"],
-    boolean: ["yes"],
-    alias: {
-      t: "template",
-      l: "lang",
-      s: "systems",
-      y: "yes",
-    },
-  });
-};
-
-const normalizeTemplate = (value: unknown): TemplateName | undefined => {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const template = value as TemplateName;
-  return templateOptions.some((option) => option.value === template)
-    ? template
-    : undefined;
-};
-
-const normalizeLang = (
-  value: unknown,
-  availableLangs: string[]
-): string | undefined => {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  return availableLangs.includes(value) ? value : undefined;
-};
-
-const normalizeSystems = (value: unknown): string[] | undefined => {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const supportedSystems = value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  return supportedSystems.length > 0 ? supportedSystems : undefined;
-};
-
-const resolveTemplate = async (
-  value: unknown,
-  skipPrompts: boolean
-): Promise<TemplateName> => {
-  const template = normalizeTemplate(value);
-  if (template) {
-    return template;
-  }
-
-  if (skipPrompts) {
-    return "base";
-  }
-
+const resolveTemplate = async (): Promise<TemplateName> => {
   return ensureAnswer(
     await select({
       message: "Select a flake template",
@@ -143,19 +85,7 @@ const resolveTemplate = async (
   );
 };
 
-const resolveSupportedSystems = async (
-  value: unknown,
-  skipPrompts: boolean
-): Promise<string[]> => {
-  const supportedSystems = normalizeSystems(value);
-  if (supportedSystems) {
-    return supportedSystems;
-  }
-
-  if (skipPrompts) {
-    return ["x86_64-linux", "aarch64-darwin"];
-  }
-
+const resolveSupportedSystems = async (): Promise<string[]> => {
   return ensureAnswer(
     await multiselect({
       message: "Supported systems",
@@ -165,21 +95,7 @@ const resolveSupportedSystems = async (
   );
 };
 
-const resolveLang = async (
-  value: unknown,
-  availableLangs: string[],
-  defaultLang: string,
-  skipPrompts: boolean
-): Promise<string> => {
-  const lang = normalizeLang(value, availableLangs);
-  if (lang) {
-    return lang;
-  }
-
-  if (skipPrompts) {
-    return defaultLang;
-  }
-
+const resolveLang = async (availableLangs: string[]): Promise<string> => {
   const langOptions = availableLangs.map((langValue) => ({
     value: langValue,
     label: toTitle(langValue),
@@ -194,22 +110,11 @@ const resolveLang = async (
 };
 
 const resolveConfig = async (): Promise<CliConfig> => {
-  const args = parseArgs();
   const availableLangs = Object.keys(langConfigs);
-  const defaultLang = availableLangs[0] ?? "node";
-  const skipPrompts = Boolean(args.yes);
 
-  const template = await resolveTemplate(args.template, skipPrompts);
-  const supportedSystems = await resolveSupportedSystems(
-    args.systems,
-    skipPrompts
-  );
-  const lang = await resolveLang(
-    args.lang,
-    availableLangs,
-    defaultLang,
-    skipPrompts
-  );
+  const template = await resolveTemplate();
+  const supportedSystems = await resolveSupportedSystems();
+  const lang = await resolveLang(availableLangs);
 
   return {
     template,
@@ -219,10 +124,10 @@ const resolveConfig = async (): Promise<CliConfig> => {
 };
 
 const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
-  const configs = langConfigs as Record<
+  const configs: Record<
     string,
     (typeof langConfigs)[keyof typeof langConfigs]
-  >;
+  > = langConfigs;
   const lang = configs[langKey];
   if (!lang) {
     return [];
@@ -230,11 +135,7 @@ const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
 
   const selectedPackages: NixPackage[] = [];
   for (const step of lang.packages.steps) {
-    const choices = step.choices as unknown as Record<
-      string,
-      { label: string; packages: NixPackage[] }
-    >;
-    const entries = Object.entries(choices);
+    const entries = Object.entries(step.choices);
     const options = entries.map(([key, choice]) => ({
       value: key,
       label: choice.label,
@@ -247,7 +148,7 @@ const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
       })
     );
 
-    const selectedPackagesForStep = choices[selected]?.packages ?? [];
+    const selectedPackagesForStep = step.choices[selected]?.packages ?? [];
     selectedPackages.push(...selectedPackagesForStep);
   }
 
