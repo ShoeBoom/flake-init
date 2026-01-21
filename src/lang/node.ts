@@ -3,6 +3,15 @@ import type { LangConfig, LangStepChoice } from "../templater";
 const nodeVersionStep: LangStepChoice = {
   prompt: "Select Node.js version",
   choices: {
+    nodejs_25: {
+      label: "25",
+      hint: "Node.js 25",
+      packages: [
+        {
+          package: "nodejs_25",
+        },
+      ],
+    },
     nodejs_22: {
       label: "22",
       hint: "Node.js 22",
@@ -21,15 +30,6 @@ const nodeVersionStep: LangStepChoice = {
         },
       ],
     },
-    nodejs_25: {
-      label: "25",
-      hint: "Node.js 25",
-      packages: [
-        {
-          package: "nodejs_25",
-        },
-      ],
-    },
   },
 };
 
@@ -38,7 +38,7 @@ const packageManagerStep: LangStepChoice = {
   choices: {
     npm: {
       label: "npm",
-      hint: "(bundled)",
+      hint: "bundled",
       packages: [],
     },
     pnpm: {
