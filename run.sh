@@ -46,8 +46,13 @@ trap cleanup EXIT INT TERM
 download() {
   url="$1"
   out="$2"
+  show_progress="${3:-}"
 
   if command -v curl >/dev/null 2>&1; then
+    if [ "$show_progress" = "progress" ] && [ -t 1 ]; then
+      curl -fL# "$url" -o "$out"
+      return
+    fi
     curl -fsSL "$url" -o "$out"
     return
   fi
@@ -100,7 +105,7 @@ if [ -f "$CACHE_PATH" ]; then
 fi
 
 mkdir -p "$CACHE_DIR"
-download "$ASSET_URL" "$ASSET_TMP"
+download "$ASSET_URL" "$ASSET_TMP" "progress"
 chmod +x "$ASSET_TMP"
 
 DOWNLOADED_SHA="$(sha256 "$ASSET_TMP")"
