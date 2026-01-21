@@ -40,7 +40,8 @@ const packageManagerStep: LangStepChoice = {
   prompt: "Pick a package manager",
   choices: {
     npm: {
-      label: "npm (bundled)",
+      label: "npm",
+      hint: "(bundled)",
       packages: [],
     },
     pnpm: {
