@@ -44,7 +44,7 @@ const run = async () => {
   const outputPath = await writeFlake(template);
   spin.stop("Flake created");
 
-  if (config.createEncrc) {
+  if (config.shouldCreateEncrc) {
     await createEnvrc(spin);
   }
 

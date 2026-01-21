@@ -123,7 +123,7 @@ export const resolveConfig = async () => {
     })
   );
 
-  const createEncrc = ensureAnswer(
+  const shouldCreateEncrc = ensureAnswer(
     await confirm({
       message: "Create .envrc file?",
       initialValue: true,
@@ -143,7 +143,7 @@ export const resolveConfig = async () => {
   return {
     template,
     lang,
-    createEncrc,
+    shouldCreateEncrc,
     supportedSystems,
   };
 };
