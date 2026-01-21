@@ -3,24 +3,7 @@ import langConfigs from "../lang";
 import type { NixPackage } from "../templater";
 import { ensureAnswer, typeSafeEntries, typeSafeKeys } from "../utils";
 
-const systemOptions = [
-  {
-    value: "x86_64-linux",
-    hint: "Linux (Intel/AMD)",
-  },
-  {
-    value: "aarch64-linux",
-    hint: "Linux (ARM)",
-  },
-  {
-    value: "x86_64-darwin",
-    hint: "macOS (Intel)",
-  },
-  {
-    value: "aarch64-darwin",
-    hint: "macOS (Apple Silicon)",
-  },
-] as const;
+// const systemOptions =  as const;
 
 interface TemplateConfig {
   template: (props: {
@@ -124,11 +107,24 @@ const resolveSupportedSystems = async () => {
   return ensureAnswer(
     await multiselect({
       message: "Supported systems",
-      options: systemOptions.map((option) => ({
-        value: option.value,
-        label: option.value,
-        hint: option.hint,
-      })),
+      options: [
+        {
+          value: "x86_64-linux",
+          hint: "Linux (Intel/AMD)",
+        },
+        {
+          value: "aarch64-linux",
+          hint: "Linux (ARM)",
+        },
+        {
+          value: "x86_64-darwin",
+          hint: "macOS (Intel)",
+        },
+        {
+          value: "aarch64-darwin",
+          hint: "macOS (Apple Silicon)",
+        },
+      ],
       required: true,
     })
   );
