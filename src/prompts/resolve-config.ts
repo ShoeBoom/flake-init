@@ -98,27 +98,29 @@ export const resolveConfig = async () => {
     })
   );
 
+  const supportedSystemOptions = [
+    {
+      value: "x86_64-linux",
+      hint: "Linux (Intel/AMD)",
+    },
+    {
+      value: "aarch64-linux",
+      hint: "Linux (ARM)",
+    },
+    {
+      value: "x86_64-darwin",
+      hint: "macOS (Intel)",
+    },
+    {
+      value: "aarch64-darwin",
+      hint: "macOS (Apple Silicon)",
+    },
+  ];
+
   const supportedSystems = ensureAnswer(
     await multiselect({
-      message: "Supported systems",
-      options: [
-        {
-          value: "x86_64-linux",
-          hint: "Linux (Intel/AMD)",
-        },
-        {
-          value: "aarch64-linux",
-          hint: "Linux (ARM)",
-        },
-        {
-          value: "x86_64-darwin",
-          hint: "macOS (Intel)",
-        },
-        {
-          value: "aarch64-darwin",
-          hint: "macOS (Apple Silicon)",
-        },
-      ],
+      message: "Supported systems (press A to toggle all)",
+      options: supportedSystemOptions,
       required: true,
     })
   );
