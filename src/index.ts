@@ -106,7 +106,7 @@ const resolveConfig = async () => {
   };
 };
 
-const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
+const selectPackages = async (langKey: string) => {
   const configs = langConfigs;
   const lang = configs[langKey as keyof typeof langConfigs];
   if (!lang) {
