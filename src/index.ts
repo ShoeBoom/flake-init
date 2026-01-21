@@ -158,11 +158,11 @@ const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
 
   const selectedPackages: NixPackage[] = [];
   for (const step of lang.packages.steps) {
-    const choices = step.choices as Record<string, NixPackage[]>;
-    const entries = Object.entries(choices) as [string, NixPackage[]][];
-    const options = entries.map(([key, packages]) => ({
+    const choices = step.choices as unknown as Record<string, { label: string; packages: NixPackage[] }>;
+    const entries = Object.entries(choices);
+    const options = entries.map(([key, choice]) => ({
       value: key,
-      label: packages.map((item) => item.name).join(", "),
+      label: choice.label,
     }));
 
     const selected = ensureAnswer(
@@ -172,7 +172,7 @@ const selectPackages = async (langKey: string): Promise<NixPackage[]> => {
       })
     );
 
-    const selectedPackagesForStep = choices[selected] ?? [];
+    const selectedPackagesForStep = choices[selected]?.packages ?? [];
     selectedPackages.push(...selectedPackagesForStep);
   }
 

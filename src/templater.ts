@@ -3,9 +3,14 @@ export type NixPackage = {
   package: string;
 };
 
+export type LangStepChoiceOption = {
+  label: string;
+  packages: NixPackage[];
+};
+
 export type LangStepChoice = {
   prompt: string;
-  choices: Record<string, NixPackage[]>;
+  choices: Record<string, LangStepChoiceOption>;
 };
 
 export type LangConfig = {
