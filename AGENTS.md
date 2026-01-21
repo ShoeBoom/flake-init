@@ -18,7 +18,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 
 ### Type Safety & Explicitness
 
-- Use explicit types for function parameters and return values when they enhance clarity
+- Use explicit types for function parameters, avoid return types unless nessecary
 - Prefer `unknown` over `any` when the type is genuinely unknown
 - Use const assertions (`as const`) for immutable values and literal types
 - Leverage TypeScript's type narrowing instead of type assertions

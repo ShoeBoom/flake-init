@@ -21,12 +21,6 @@ import {
 } from "./templater";
 import { typeSafeEntries, typeSafeKeys } from "./utils";
 
-interface CliConfig {
-  template: TemplateName;
-  lang: string;
-  supportedSystems: string[];
-}
-
 const systemOptions = [
   {
     value: "x86_64-linux",
@@ -48,10 +42,7 @@ const systemOptions = [
     label: "aarch64-darwin",
     hint: "macOS (Apple Silicon)",
   },
-];
-
-const toTitle = (value: string) =>
-  `${value.slice(0, 1).toUpperCase()}${value.slice(1)}`;
+] as const;
 
 const ensureAnswer = <T>(answer: T | symbol): T => {
   if (isCancel(answer)) {
@@ -74,20 +65,25 @@ const resolveTemplate = async () => {
   );
 };
 
-const resolveSupportedSystems = async (): Promise<string[]> => {
+const resolveSupportedSystems = async () => {
   return ensureAnswer(
-    await multiselect({
+    await multiselect<(typeof systemOptions)[number]["value"]>({
       message: "Supported systems",
-      options: systemOptions,
+      options: systemOptions.map((option) => ({
+        value: option.value,
+        label: option.label,
+        hint: option.hint,
+      })),
       required: true,
     })
   );
 };
 
-const resolveLang = async (availableLangs: string[]): Promise<string> => {
+const resolveLang = async () => {
+  const availableLangs = typeSafeKeys(langConfigs);
   const langOptions = availableLangs.map((langValue) => ({
     value: langValue,
-    label: toTitle(langValue),
+    label: langValue,
   }));
 
   return ensureAnswer(
@@ -98,12 +94,10 @@ const resolveLang = async (availableLangs: string[]): Promise<string> => {
   );
 };
 
-const resolveConfig = async (): Promise<CliConfig> => {
-  const availableLangs = typeSafeKeys(langConfigs);
-
+const resolveConfig = async () => {
   const template = await resolveTemplate();
   const supportedSystems = await resolveSupportedSystems();
-  const lang = await resolveLang(availableLangs);
+  const lang = await resolveLang();
 
   return {
     template,
